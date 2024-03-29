@@ -1,0 +1,56 @@
+﻿@model IEnumerable<EntradaProduto>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1>Listagem de EntradaProdutos</h1>
+        <div>
+            <a class="btn btn-outline-primary mx-2" asp-controller="EntradaProduto" asp-action="Cadastrar">Cadastrar nova entrada de estoque</a>
+            <a class="btn btn-outline-secondary mx-2" asp-controller="Home" asp-action="Index">Voltar</a>
+        </div>
+    </div>
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert alert-success text-dark" role="alert">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+
+    @if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert alert-danger text-light" role="alert">
+            @TempData["MensagemErro"]
+        </div>
+    }
+
+    <table id="EntradaProdutos" class="table table-light table-hover mt-5 tabela-data-table">
+        <thead>
+            <tr>
+                <th class="order-column" scope="col">Data</th>
+                <th>Produto</th>
+                <th>Número de série</th>
+                <th>Preço de custo</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var EntradaProduto in Model)
+                {
+                    <tr>
+                        <td>@EntradaProduto.DataEntrada.ToShortDateString()</td>
+                        <td>@EntradaProduto.Produto.ProdutoNome</td>
+                        <td>@EntradaProduto.NumeroSerie</td>
+                        <td>@EntradaProduto.PrecoCusto</td>
+                        <td><a asp-controller="EntradaProduto" asp-action="Editar" asp-route-id="@EntradaProduto.Id" class="btn btn-warning mx-2"><i class="bi bi-pencil-square mx-2"></i>Editar</a></td>
+                        <td><a asp-controller="EntradaProduto" asp-action="Excluir" asp-route-id="@EntradaProduto.Id" class="btn btn-danger mx-2"><i class="bi bi-trash3-fill mx-2"></i>Excluir</a></td>
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+    </table>
+</div>

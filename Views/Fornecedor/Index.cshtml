@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Fornecedor>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1>Listagem de fornecedores</h1>
+        <div>
+            <a class="btn btn-outline-primary mx-2" asp-controller="Fornecedor" asp-action="Cadastrar">Cadastrar novo fornecedor</a>
+            <a class="btn btn-outline-secondary mx-2" asp-controller="Home" asp-action="Index">Voltar</a>
+        </div>
+    </div>
+    <table id="Fornecedores" class="table table-light table-hover mt-5 tabela-data-asc">
+        <thead>
+            <tr>
+                <th scope="col">Fornecedores</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var fornecedor in Model)
+                {
+                    <tr>
+                        <td>@fornecedor.FornecedorNome</td>
+                        <td><a asp-controller="Fornecedor" asp-action="Editar" asp-route-id="@fornecedor.Id" class="btn btn-warning mx-2"><i class="bi bi-pencil-square mx-2"></i>Editar</a></td>
+                        <td><a asp-controller="Fornecedor" asp-action="Excluir" asp-route-id="@fornecedor.Id" class="btn btn-danger mx-2"><i class="bi bi-trash3-fill mx-2"></i>Excluir</a></td>
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+    </table>
+</div>

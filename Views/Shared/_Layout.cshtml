@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estoque & Vendas</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EstoqueVendas.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Estoque & Vendas</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end ms-auto">
+                    <ul class="navbar-nav flex-grow-1 justify-content-end ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link text-light btn btn-dark mx-2" asp-controller="Home" asp-action="Index"><i class="bi bi-box-fill"></i>  Estoque</a>
+                        </li> 
+                        <li class="nav-item">
+                            <a class="nav-link text-light btn btn-dark mx-2" asp-controller="Fornecedor" asp-action="Index"><i class="bi bi-bank"></i> Fornecedores</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light btn btn-dark mx-2" asp-controller="Produto" asp-action="Index"><i class="bi bi-box-seam"></i> Produtos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light btn btn-dark mx-2" asp-controller="EntradaProduto" asp-action="Index"><i class="bi bi-box-arrow-in-down"></i> Entrada de estoque</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light btn btn-dark mx-2" asp-controller="SaidaProduto" asp-action="Index"><i class="bi bi-box-arrow-down"></i> Saída de estoque</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - EstoqueVendas - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/scripts/jquery/jquery.mask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script src="https://cdn.datatables.net/v/dt/dt-1.13.8/datatables.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,64 @@
+﻿@model IEnumerable<SaidaProduto>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1>Listagem de SaidaProdutos</h1>
+        <div>
+            <a class="btn btn-outline-primary mx-2" asp-controller="SaidaProduto" asp-action="Cadastrar">Cadastrar nova saída de estoque</a>
+            <a class="btn btn-outline-secondary mx-2" asp-controller="Home" asp-action="Index">Voltar</a>
+        </div>
+    </div>
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert alert-success text-dark" role="alert">
+            @TempData["MensagemSucesso"]
+        </div>
+    }
+
+    @if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert alert-danger text-light" role="alert">
+            @TempData["MensagemErro"]
+        </div>
+    }
+    <div class="mb-3">
+        <p class="alert-primary">Soma do Lucro de Venda dos últimos 30 dias: R$@ViewBag.LucroTotal30Dias</p>
+    </div>
+
+
+    <table id="SaidaProdutos" class="table table-light table-hover mt-5 tabela-data-table">
+        <thead>
+            <tr>
+                <th scope="col">Data</th>
+                <th>Cliente</th>
+                <th>Produto</th>
+                <th>Número de série</th>
+                <th>Preço de venda</th>
+                <th>Lucro</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var SaidaProduto in Model)
+                {
+                    <tr>
+                        <td>@SaidaProduto.DataSaida.ToShortDateString()</td>
+                        <td>@SaidaProduto.NomeCliente</td>
+                        <td>@SaidaProduto.Produto.ProdutoNome</td>
+                        <td>@SaidaProduto.NumeroSerie</td>
+                        <td>R$@SaidaProduto.PrecoVenda</td>
+                        <td>R$@SaidaProduto.LucroVenda</td>
+                        <td><a asp-controller="SaidaProduto" asp-action="Editar" asp-route-id="@SaidaProduto.Id" class="btn btn-warning mx-2"><i class="bi bi-pencil-square mx-2"></i>Editar</a></td>
+                        <td><a asp-controller="SaidaProduto" asp-action="Excluir" asp-route-id="@SaidaProduto.Id" class="btn btn-danger mx-2"><i class="bi bi-trash3-fill mx-2"></i>Excluir</a></td>
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+    </table>
+</div>
