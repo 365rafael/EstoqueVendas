@@ -1,6 +1,7 @@
 using EstoqueVendas.Context;
 using EstoqueVendas.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace EstoqueVendas.Controllers
@@ -17,14 +18,28 @@ namespace EstoqueVendas.Controllers
             _db = context;
         }
 
-       
+
         public IActionResult Index()
         {
-            return View();
-        }  
-        
-      
-     
+            var estoque = _db.EntradaProduto
+                .Include(p => p.Produto)
+                .Where(e => e.Ativo == true)
+                .GroupBy(e => e.Produto.ProdutoNome)
+                .Select(g => new
+                {
+                    ProdutoNome = g.Key,
+                    Quantidade = g.Count(),
+                    TotalPrecoCusto = g.Sum(e => e.PrecoCusto)
+                })
+                .OrderBy(p => p.ProdutoNome)
+                .ToList();
+
+            return View(estoque);
+        }
+
+
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

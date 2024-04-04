@@ -1,9 +1,30 @@
-﻿
+﻿@model IEnumerable<dynamic>
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-5">
         <h1>Estoque atual</h1>
-        
     </div>
-</div>
 
+    <table id="EntradaProdutos" class="table table-light table-hover mt-5 tabela-data-asc">
+        <thead>
+            <tr>
+                <th class="order-column" scope="col">Produto</th>
+                <th>Quantidade</th>
+                <th>Preço do Estoque</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ProdutoNome</td>
+                        <td>@item.Quantidade</td>
+                        <td>R$@item.TotalPrecoCusto</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
