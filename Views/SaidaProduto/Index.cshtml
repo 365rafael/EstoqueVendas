@@ -2,7 +2,7 @@
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-5">
-        <h1>Listagem de Saídas de estoque</h1>
+        <h1>Listagem de saídas de estoque</h1>
         <div>
             <a class="btn btn-outline-primary mx-2" asp-controller="SaidaProduto" asp-action="Cadastrar">Cadastrar nova saída de estoque</a>
             <a class="btn btn-outline-secondary mx-2" asp-controller="Home" asp-action="Index">Voltar</a>
@@ -34,6 +34,7 @@
                 <th scope="col">Data</th>
                 <th>Cliente</th>
                 <th>Produto</th>
+                <th>Fornecedor</th>
                 <th>Número de série</th>
                 <th>Preço de venda</th>
                 <th>Lucro</th>
@@ -51,6 +52,7 @@
                         <td>@SaidaProduto.DataSaida.ToShortDateString()</td>
                         <td>@SaidaProduto.NomeCliente</td>
                         <td>@SaidaProduto.Produto.ProdutoNome</td>
+                        <td>@SaidaProduto.Produto.Fornecedor.FornecedorNome</td>
                         <td>@SaidaProduto.NumeroSerie</td>
                         <td>R$@SaidaProduto.PrecoVenda</td>
                         <td>R$@SaidaProduto.LucroVenda</td>

@@ -34,7 +34,8 @@ namespace EstoqueVendas.Controllers
             ViewBag.TotalAtivadosUltimos30Dias = totalAtivadosUltimos30Dias;
 
             IEnumerable<SaidaProduto> SaidaProdutos = _db.SaidaProduto
-                .Include(p => p.Produto) 
+                .Include(p => p.Produto)
+                .ThenInclude(p => p.Fornecedor)
                 .OrderByDescending(f => f.DataSaida)
                 .ToList();
             return View(SaidaProdutos);
