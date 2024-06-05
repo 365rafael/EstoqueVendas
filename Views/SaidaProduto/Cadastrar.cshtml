@@ -50,7 +50,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="PrecoCusto" class="form-label text-light">Preco de custo(0.00):</label>
+            <label for="PrecoVenda" class="form-label text-light">Preco de venda:</label>
             <input type="text" class="form-control text-dark" asp-for="PrecoVenda" id="Preco" placeholder="Preco de Venda" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
             <span asp-validation-for="PrecoVenda" class="text-danger"></span>
         </div>

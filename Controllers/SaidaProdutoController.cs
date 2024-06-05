@@ -25,6 +25,14 @@ namespace EstoqueVendas.Controllers
                 .Sum(s => s.LucroVenda);
 
             ViewBag.LucroTotal30Dias = lucroTotal;
+
+            // Calcular total de SaidaProduto.Ativado == true dos últimos 30 dias
+            var totalAtivadosUltimos30Dias = _db.SaidaProduto
+                .Where(s => s.DataSaida >= dataLimite && s.DataSaida <= hoje && s.Ativado == true)
+                .Count();
+
+            ViewBag.TotalAtivadosUltimos30Dias = totalAtivadosUltimos30Dias;
+
             IEnumerable<SaidaProduto> SaidaProdutos = _db.SaidaProduto
                 .Include(p => p.Produto) 
                 .OrderByDescending(f => f.DataSaida)
@@ -65,7 +73,7 @@ namespace EstoqueVendas.Controllers
                 }
 
                 SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
-
+                SaidaProduto.Ativado = false;
                 _db.SaidaProduto.Add(SaidaProduto);
                 _db.SaveChanges();
 

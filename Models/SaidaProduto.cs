@@ -9,6 +9,7 @@
         public string? NomeCliente { get; set; }
         public decimal? PrecoVenda { get; set; }
         public decimal? LucroVenda { get; set; }
+        public bool? Ativado { get; set; }
         public virtual Produto Produto { get; set; }
     }
 }

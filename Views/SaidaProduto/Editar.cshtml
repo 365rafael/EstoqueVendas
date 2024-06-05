@@ -47,11 +47,22 @@
             <input type="text" class="form-control text-dark" asp-for="PrecoVenda" id="Preco" placeholder="Preco de venda" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
             <span asp-validation-for="PrecoVenda" class="text-danger"></span>
         </div>
-       
+
+        <div class="mb-3">
+            <label for="Ativado" class="form-label text-light">Ativado?</label>
+            <select class="form-select text-dark" asp-for="Ativado" id="Ativado">
+
+                <option value="true">Sim</option>
+                <option value="false">Não</option>
+
+            </select>
+            <span asp-validation-for="Ativado"></span>
+        </div>
+
 
         <div class="d-flex gap-5 mt-5">
             <button type="submit" class="btn btn-success w-50">Salvar</button>
-            <a class="btn btn-primary w-50" asp-controller="Fornecedor" asp-action="Index">Voltar</a>
+            <a class="btn btn-primary w-50" asp-controller="SaidaProduto" asp-action="Index">Voltar</a>
         </div>
 
     </form>
