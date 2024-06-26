@@ -16,28 +16,37 @@ namespace EstoqueVendas.Controllers
         }
         public IActionResult Index()
         {
-            //calcualr lucro dos últimos 30 dias
             var hoje = DateTime.Today;
-            var dataLimite = hoje.AddDays(-30); // Obtém a data de 30 dias atrás
 
-            var lucroTotal = _db.SaidaProduto
-                .Where(s => s.DataSaida >= dataLimite && s.DataSaida <= hoje)
+            // Mês atual
+            var primeiroDiaMesAtual = new DateTime(hoje.Year, hoje.Month, 1);
+            var lucroMesAtual = _db.SaidaProduto
+                .Where(s => s.DataSaida >= primeiroDiaMesAtual && s.DataSaida <= hoje)
                 .Sum(s => s.LucroVenda);
+            ViewBag.LucroMesAtual = lucroMesAtual;
 
-            ViewBag.LucroTotal30Dias = lucroTotal;
+            // Mês anterior
+            var primeiroDiaMesAnterior = primeiroDiaMesAtual.AddMonths(-1);
+            var ultimoDiaMesAnterior = primeiroDiaMesAtual.AddDays(-1);
+            var lucroMesAnterior = _db.SaidaProduto
+                .Where(s => s.DataSaida >= primeiroDiaMesAnterior && s.DataSaida <= ultimoDiaMesAnterior)
+                .Sum(s => s.LucroVenda);
+            ViewBag.LucroMesAnterior = lucroMesAnterior;
 
             // Calcular total de SaidaProduto.Ativado == true dos últimos 30 dias
+            var dataLimite = hoje.AddDays(-30);
             var totalAtivadosUltimos30Dias = _db.SaidaProduto
                 .Where(s => s.DataSaida >= dataLimite && s.DataSaida <= hoje && s.Ativado == true)
                 .Count();
-
             ViewBag.TotalAtivadosUltimos30Dias = totalAtivadosUltimos30Dias;
 
+            // Carregar os produtos de saída
             IEnumerable<SaidaProduto> SaidaProdutos = _db.SaidaProduto
                 .Include(p => p.Produto)
                 .ThenInclude(p => p.Fornecedor)
                 .OrderByDescending(f => f.DataSaida)
                 .ToList();
+
             return View(SaidaProdutos);
         }
 
