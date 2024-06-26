@@ -1,7 +1,9 @@
 ﻿using EstoqueVendas.Context;
+using EstoqueVendas.ViewModels;
 using EstoqueVendas.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using EstoqueVendas.ViewModels;
 
 namespace EstoqueVendas.Controllers
 {
@@ -178,6 +180,46 @@ namespace EstoqueVendas.Controllers
             TempData["MensagemSucesso"] = "Remoção realizada com sucesso!";
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Relatorio(DateTime dataInicial, DateTime dataFinal)
+        {
+            var relatorioData = _db.SaidaProduto
+                .Include(p => p.Produto)
+                .Where(s => s.DataSaida >= dataInicial && s.DataSaida <= dataFinal)
+                .GroupBy(s => s.Produto.ProdutoNome)
+                .Select(g => new RelatorioViewModel
+                {
+                    ProdutoNome = g.Key,
+                    QuantidadeVendida = g.Count(),
+                    SomaVendas = g.Sum(s => s.PrecoVenda),
+                    LucroTotal = g.Sum(s => s.LucroVenda)
+                })
+                .OrderBy(r => r.ProdutoNome)
+                .ToList();
+
+            var lucroTotalPeriodo = relatorioData.Sum(r => r.LucroTotal);
+            ViewBag.LucroTotalPeriodo = lucroTotalPeriodo;
+
+            // Dados de vendas por fornecedor
+            var fornecedorData = _db.SaidaProduto
+                .Include(p => p.Produto.Fornecedor)
+                .Where(s => s.DataSaida >= dataInicial && s.DataSaida <= dataFinal)
+                .GroupBy(s => s.Produto.Fornecedor.FornecedorNome)
+                .Select(g => new FornecedorViewModel
+                {
+                    FornecedorNome = g.Key,
+                    QuantidadeVendida = g.Count(),
+                    SomaVendas = g.Sum(s => s.PrecoVenda),
+                    LucroTotal = g.Sum(s => s.LucroVenda)
+                })
+                .OrderBy(f => f.FornecedorNome)
+                .ToList();
+
+            ViewBag.FornecedorData = fornecedorData;
+
+            return View("Relatorio", relatorioData);
         }
     }
 }

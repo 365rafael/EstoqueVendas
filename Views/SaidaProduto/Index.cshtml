@@ -5,7 +5,36 @@
         <h1>Listagem de saídas de estoque</h1>
         <div>
             <a class="btn btn-outline-primary mx-2" asp-controller="SaidaProduto" asp-action="Cadastrar">Cadastrar nova saída de estoque</a>
+            <button class="btn btn-outline-success mx-2" data-bs-toggle="modal" data-bs-target="#relatorioModal">Relatório</button>
             <a class="btn btn-outline-secondary mx-2" asp-controller="Home" asp-action="Index">Voltar</a>
+        </div>
+    </div>
+
+    <!-- Modal para selecionar as datas -->
+    <div class="modal fade" id="relatorioModal" tabindex="-1" aria-labelledby="relatorioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="relatorioModalLabel">Gerar Relatório</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="relatorioForm" asp-controller="SaidaProduto" asp-action="Relatorio" method="post">
+                        <div class="mb-3">
+                            <label for="dataInicial" class="form-label">Data Inicial</label>
+                            <input type="date" class="form-control" id="dataInicial" name="dataInicial" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataFinal" class="form-label">Data Final</label>
+                            <input type="date" class="form-control" id="dataFinal" name="dataFinal" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -1,0 +1,64 @@
+﻿@model IEnumerable<EstoqueVendas.ViewModels.RelatorioViewModel>
+@{
+    var fornecedorData = (IEnumerable<EstoqueVendas.ViewModels.FornecedorViewModel>)ViewBag.FornecedorData;
+}
+
+<div class="container">
+    <h1>Relatório de Vendas</h1>
+    <br />
+    <!-- Tabela de vendas por produto -->
+    <h2>Vendas por Produto</h2>
+    <table class="table table-light table-hover mt-5">
+        <thead>
+            <tr>
+                <th scope="col">Produto</th>
+                <th scope="col">Quantidade Vendida</th>
+                <th scope="col">Soma das Vendas</th>
+                <th scope="col">Lucro</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ProdutoNome</td>
+                    <td>@item.QuantidadeVendida</td>
+                    <td>R$@item.SomaVendas</td>
+                    <td>R$@item.LucroTotal</td>
+                </tr>
+            }
+            <tr>
+                <td colspan="3" class="text-end"><strong>Lucro Total do Período:</strong></td>
+                <td><strong>R$@ViewBag.LucroTotalPeriodo</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <br />
+    <!-- Tabela de vendas por fornecedor -->
+    <h2>Vendas por Fornecedor</h2>
+    <table class="table table-light table-hover mt-5">
+        <thead>
+            <tr>
+                <th scope="col">Fornecedor</th>
+                <th scope="col">Quantidade Vendida</th>
+                <th scope="col">Soma das Vendas</th>
+                <th scope="col">Lucro Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in fornecedorData)
+            {
+                <tr>
+                    <td>@item.FornecedorNome</td>
+                    <td>@item.QuantidadeVendida</td>
+                    <td>R$@item.SomaVendas</td>
+                    <td>R$@item.LucroTotal</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <a class="btn btn-outline-secondary" asp-controller="SaidaProduto" asp-action="Index">Voltar</a>
+    </div>
+</div>
