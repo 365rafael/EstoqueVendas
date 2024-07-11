@@ -14,17 +14,31 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model != null)
-            {
-                @foreach (var item in Model)
+            @{
+                decimal totalEstoque = 0; // Variável para armazenar o total
+                int totalProdutos = 0;
+
+                if (Model != null)
                 {
-                    <tr>
-                        <td>@item.ProdutoNome</td>
-                        <td>@item.Quantidade</td>
-                        <td>R$@item.TotalPrecoCusto</td>
-                    </tr>
+                    foreach (var item in Model)
+                    {
+                        totalEstoque += item.TotalPrecoCusto; // Acumular o total
+                        totalProdutos += item.Quantidade;
+                        <tr>
+                            <td>@item.ProdutoNome</td>
+                            <td>@item.Quantidade</td>
+                            <td>R$@item.TotalPrecoCusto</td>
+                        </tr>
+                    }
                 }
             }
         </tbody>
+        <tfoot>
+            <tr>
+                <td><strong>Total do Estoque:</strong></td>
+                <td><strong>@totalProdutos un.</strong></td>
+                <td><strong>R$@totalEstoque</strong></td>
+            </tr>
+        </tfoot>
     </table>
 </div>

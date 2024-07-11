@@ -16,7 +16,7 @@ namespace EstoqueVendas.Controllers
         }
         public IActionResult Index()
         {
-            IEnumerable<EntradaProduto> EntradaProdutos = _db.EntradaProduto
+            IEnumerable<EntradaProduto> EntradaProdutos = _db.EntradaProduto.Where(p => p.Ativo == true)
                 .Include(p => p.Produto) // Inclui os dados do produto
                 .OrderByDescending(f => f.DataEntrada)
                 .ToList();
@@ -41,6 +41,7 @@ namespace EstoqueVendas.Controllers
             }
             if (entradaProduto != null)
             {
+                
                 entradaProduto.Ativo = true;
                 _db.EntradaProduto.Add(entradaProduto);
                 _db.SaveChanges();
@@ -80,7 +81,6 @@ namespace EstoqueVendas.Controllers
         public IActionResult Editar(EntradaProduto EntradaProduto)
         {
             EntradaProduto.Ativo = true;
-
             _db.EntradaProduto.Update(EntradaProduto);
             _db.SaveChanges();
 

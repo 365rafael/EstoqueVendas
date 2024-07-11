@@ -125,7 +125,6 @@ namespace EstoqueVendas.Controllers
         {
 
             var entradaProduto = _db.EntradaProduto.FirstOrDefault(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
-
             SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
 
             _db.SaidaProduto.Update(SaidaProduto);

@@ -1,5 +1,7 @@
 ﻿
 $(document).ready(function () {
+    // Register the datetime plugin with DataTables
+    $.fn.dataTable.moment('DD/MM/YYYY');
 
     $('.tabela-data-table').DataTable({
         order: [[0, 'desc']],
@@ -32,13 +34,13 @@ $(document).ready(function () {
 
     });
 
-    setTimeout(function () {
-        $(".alert").fadeOut("slow", function () {
-            $(this).alert('close');
-        })
-    }, 5000)
-});
-$(document).ready(function () {
+//    setTimeout(function () {
+//        $(".alert").fadeOut("slow", function () {
+//            $(this).alert('close');
+//        })
+//    }, 5000)
+//});
+//$(document).ready(function () {
 
     $('.tabela-data-asc').DataTable({
         language:
@@ -77,6 +79,6 @@ $(document).ready(function () {
     }, 5000)
 });
 
-$(document).ready(function () {
-    $('#Preco').mask('000.000.000.000.000,00', { reverse: true });
-});
+//$(document).ready(function () {
+//    $('#Preco').mask('000.000.000.000.000,00', { reverse: true });
+//});

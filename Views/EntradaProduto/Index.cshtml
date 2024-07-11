@@ -40,7 +40,7 @@
                 @foreach (var EntradaProduto in Model)
                 {
                     <tr>
-                        <td>@EntradaProduto.DataEntrada.ToShortDateString()</td>
+                        <td>@EntradaProduto.DataEntrada.ToString("dd/MM/yyyy")</td>
                         <td>@EntradaProduto.Produto.ProdutoNome</td>
                         <td>@EntradaProduto.NumeroSerie</td>
                         <td>@EntradaProduto.PrecoCusto</td>
