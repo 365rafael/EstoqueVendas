@@ -13,5 +13,6 @@ namespace EstoqueVendas.Context
         public DbSet<SaidaProduto> SaidaProduto { get; set; }
         public DbSet<Produto> Produto { get; set; }
         public DbSet<Fornecedor> Fornecedor { get; set; }
+        public DbSet<LoginModel> Login { get; set; }
     }
 }
