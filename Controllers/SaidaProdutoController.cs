@@ -49,6 +49,7 @@ namespace EstoqueVendas.Controllers
                 .OrderByDescending(f => f.DataSaida)
                 .ToList();
 
+
             return View(SaidaProdutos);
         }
 
@@ -199,7 +200,12 @@ namespace EstoqueVendas.Controllers
                 .ToList();
 
             var lucroTotalPeriodo = relatorioData.Sum(r => r.LucroTotal);
+            var quantidadeTotalVendida = relatorioData.Sum(r => r.QuantidadeVendida);
+            var valorTotalVendas = relatorioData.Sum(r => r.SomaVendas);
+
             ViewBag.LucroTotalPeriodo = lucroTotalPeriodo;
+            ViewBag.QuantidadeTotalVendida = quantidadeTotalVendida;
+            ViewBag.ValorTotalVendas = valorTotalVendas;
 
             // Dados de vendas por fornecedor
             var fornecedorData = _db.SaidaProduto

@@ -1,10 +1,19 @@
 using EstoqueVendas.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Configuração de cultura
+var defaultDateCulture = "pt-BR";
+var ci = new CultureInfo(defaultDateCulture);
+ci.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
+ci.DateTimeFormat.LongTimePattern = "HH:mm:ss";
+CultureInfo.DefaultThreadCurrentCulture = ci;
+CultureInfo.DefaultThreadCurrentUICulture = ci;
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

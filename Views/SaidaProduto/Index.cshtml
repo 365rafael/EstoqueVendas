@@ -57,8 +57,7 @@
         <p class="alert-success flex-fill text-center">Clientes ativados nos últimos 30 dias: @ViewBag.TotalAtivadosUltimos30Dias</p>
     </div>
 
-
-    <table id="SaidaProdutos" class="table table-light table-hover mt-5 tabela-data-table">
+    <table id="SaidaProdutos" class="table table-striped mt-5 tabela-data-table">
         <thead>
             <tr>
                 <th scope="col">Data</th>
@@ -79,7 +78,7 @@
                 @foreach (var SaidaProduto in Model)
                 {
                     <tr>
-                        <td>@SaidaProduto.DataSaida.ToShortDateString()</td>
+                        <td>@SaidaProduto.DataSaida.ToString("dd/MM/yyyy")</td>
                         <td>@SaidaProduto.NomeCliente</td>
                         <td>@SaidaProduto.Produto.ProdutoNome</td>
                         <td>@SaidaProduto.Produto.Fornecedor.FornecedorNome</td>
@@ -102,6 +101,6 @@
                 }
             }
         </tbody>
+        
     </table>
 </div>
-
