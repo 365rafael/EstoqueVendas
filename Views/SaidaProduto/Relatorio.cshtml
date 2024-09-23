@@ -4,7 +4,41 @@
 }
 
 <div class="container">
-    <h1>Relatório de Vendas</h1>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1>Relatório de vendas de @ViewBag.DataInicial.ToString("dd/MM/yyyy") até @ViewBag.DataFinal.ToString("dd/MM/yyyy")</h1>
+        <div>
+            <button class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#relatorioModal">Novo Relatório</button>
+            <a class="btn btn-secondary mx-2" asp-controller="SaidaProduto" asp-action="Index">Voltar</a>
+        </div>
+    </div>
+
+    <!-- Modal para selecionar as datas -->
+    <div class="modal fade" id="relatorioModal" tabindex="-1" aria-labelledby="relatorioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="relatorioModalLabel">Gerar Relatório</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="relatorioForm" asp-controller="SaidaProduto" asp-action="Relatorio" method="post">
+                        <div class="mb-3">
+                            <label for="dataInicial" class="form-label">Data Inicial</label>
+                            <input type="date" class="form-control" id="dataInicial" name="dataInicial" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataFinal" class="form-label">Data Final</label>
+                            <input type="date" class="form-control" id="dataFinal" name="dataFinal" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <br />
     <!-- Tabela de vendas por produto -->
     <h2>Vendas por Produto</h2>
@@ -61,6 +95,7 @@
     </table>
 
     <div class="mt-3">
-        <a class="btn btn-outline-secondary" asp-controller="SaidaProduto" asp-action="Index">Voltar</a>
+        <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
     </div>
+
 </div>

@@ -206,6 +206,8 @@ namespace EstoqueVendas.Controllers
             ViewBag.LucroTotalPeriodo = lucroTotalPeriodo;
             ViewBag.QuantidadeTotalVendida = quantidadeTotalVendida;
             ViewBag.ValorTotalVendas = valorTotalVendas;
+            ViewBag.DataInicial = dataInicial;
+            ViewBag.DataFinal = dataFinal;
 
             // Dados de vendas por fornecedor
             var fornecedorData = _db.SaidaProduto
