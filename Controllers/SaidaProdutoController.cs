@@ -43,7 +43,9 @@ namespace EstoqueVendas.Controllers
             ViewBag.TotalAtivadosUltimos30Dias = totalAtivadosUltimos30Dias;
 
             // Carregar os produtos de saída
+            var data45Dias = hoje.AddDays(-45);
             IEnumerable<SaidaProduto> SaidaProdutos = _db.SaidaProduto
+                .Where(p => p.DataSaida >= data45Dias && p.DataSaida <= hoje)
                 .Include(p => p.Produto)
                 .ThenInclude(p => p.Fornecedor)
                 .OrderByDescending(f => f.DataSaida)
