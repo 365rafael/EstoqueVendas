@@ -43,7 +43,7 @@
     <!-- Tabela de vendas por produto -->
     <h2>Vendas por Produto</h2>
     <table class="table table-light table-hover mt-5">
-        <thead>
+        <thead class="table table-dark">
             <tr>
                 <th scope="col">Produto</th>
                 <th scope="col">Quantidade Vendida</th>
@@ -67,13 +67,18 @@
                 <td><strong>R$@ViewBag.ValorTotalVendas</strong></td>
                 <td><strong>R$@ViewBag.LucroTotalPeriodo</strong></td>
             </tr>
+            <tr><td colspan="4"></td></tr>
+            <tr>
+                <td><strong>Total de ativações no período:</strong></td>
+                <td colspan="3"><strong>@ViewBag.TotalAtivada</strong></td>
+            </tr>
         </tbody>
     </table>
     <br />
     <!-- Tabela de vendas por fornecedor -->
     <h2>Vendas por Fornecedor</h2>
     <table class="table table-light table-hover mt-5">
-        <thead>
+        <thead class="table table-dark">
             <tr>
                 <th scope="col">Fornecedor</th>
                 <th scope="col">Quantidade Vendida</th>

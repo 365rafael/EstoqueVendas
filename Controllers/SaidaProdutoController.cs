@@ -196,7 +196,8 @@ namespace EstoqueVendas.Controllers
                     ProdutoNome = g.Key,
                     QuantidadeVendida = g.Count(),
                     SomaVendas = g.Sum(s => s.PrecoVenda),
-                    LucroTotal = g.Sum(s => s.LucroVenda)
+                    LucroTotal = g.Sum(s => s.LucroVenda),
+                    QuantidadeAtivada = g.Where(q => q.Ativado == true).Count(),
                 })
                 .OrderBy(r => r.ProdutoNome)
                 .ToList();
@@ -204,12 +205,14 @@ namespace EstoqueVendas.Controllers
             var lucroTotalPeriodo = relatorioData.Sum(r => r.LucroTotal);
             var quantidadeTotalVendida = relatorioData.Sum(r => r.QuantidadeVendida);
             var valorTotalVendas = relatorioData.Sum(r => r.SomaVendas);
+            var totalAtivada = relatorioData.Sum(r => r.QuantidadeAtivada);
 
             ViewBag.LucroTotalPeriodo = lucroTotalPeriodo;
             ViewBag.QuantidadeTotalVendida = quantidadeTotalVendida;
             ViewBag.ValorTotalVendas = valorTotalVendas;
             ViewBag.DataInicial = dataInicial;
             ViewBag.DataFinal = dataFinal;
+            ViewBag.TotalAtivada = totalAtivada;
 
             // Dados de vendas por fornecedor
             var fornecedorData = _db.SaidaProduto

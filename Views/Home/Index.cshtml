@@ -6,7 +6,7 @@
     </div>
 
     <table id="EntradaProdutos" class="table table-light table-hover mt-5 tabela-data-asc">
-        <thead>
+        <thead class="table table-dark">
             <tr>
                 <th class="order-column" scope="col">Produto</th>
                 <th>Quantidade</th>
@@ -26,14 +26,14 @@
                         totalProdutos += item.Quantidade;
                         <tr>
                             <td>@item.ProdutoNome</td>
-                            <td>@item.Quantidade</td>
+                            <td><h7 style="color:@(item.Quantidade == 1 ? "red" : "black")">@item.Quantidade</h7></td>
                             <td>R$@item.TotalPrecoCusto</td>
                         </tr>
                     }
                 }
             }
         </tbody>
-        <tfoot>
+        <tfoot class="table table-dark">
             <tr>
                 <td><strong>Total do Estoque:</strong></td>
                 <td><strong>@totalProdutos un.</strong></td>
