@@ -3,7 +3,6 @@ using EstoqueVendas.ViewModels;
 using EstoqueVendas.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using EstoqueVendas.ViewModels;
 using EstoqueVendas.Services;
 
 namespace EstoqueVendas.Controllers
@@ -19,97 +18,109 @@ namespace EstoqueVendas.Controllers
             _db = context;
             _notificacaoService = notificacaoService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var hoje = DateTime.Today;
 
             // Mês atual
             var primeiroDiaMesAtual = new DateTime(hoje.Year, hoje.Month, 1);
-            var lucroMesAtual = _db.SaidaProduto
+            var lucroMesAtual = await _db.SaidaProduto
                 .Where(s => s.DataSaida >= primeiroDiaMesAtual && s.DataSaida <= hoje)
-                .Sum(s => s.LucroVenda);
+                .SumAsync(s => s.LucroVenda);
             ViewBag.LucroMesAtual = lucroMesAtual;
 
             // Mês anterior
             var primeiroDiaMesAnterior = primeiroDiaMesAtual.AddMonths(-1);
             var ultimoDiaMesAnterior = primeiroDiaMesAtual.AddDays(-1);
-            var lucroMesAnterior = _db.SaidaProduto
+            var lucroMesAnterior = await _db.SaidaProduto
                 .Where(s => s.DataSaida >= primeiroDiaMesAnterior && s.DataSaida <= ultimoDiaMesAnterior)
-                .Sum(s => s.LucroVenda);
+                .SumAsync(s => s.LucroVenda);
             ViewBag.LucroMesAnterior = lucroMesAnterior;
 
-            // Calcular total de SaidaProduto.Ativado == true dos últimos 30 dias
+            // Total de SaidaProduto.Ativado == true nos últimos 30 dias
             var dataLimite = hoje.AddDays(-30);
-            var totalAtivadosUltimos30Dias = _db.SaidaProduto
+            var totalAtivadosUltimos30Dias = await _db.SaidaProduto
                 .Where(s => s.DataSaida >= dataLimite && s.DataSaida <= hoje && s.Ativado == true)
-                .Count();
+                .CountAsync();
             ViewBag.TotalAtivadosUltimos30Dias = totalAtivadosUltimos30Dias;
 
             // Carregar os produtos de saída
             var data45Dias = hoje.AddDays(-45);
-            IEnumerable<SaidaProduto> SaidaProdutos = _db.SaidaProduto
+            var SaidaProdutos = await _db.SaidaProduto
                 .Where(p => p.DataSaida >= data45Dias && p.DataSaida <= hoje)
                 .Include(p => p.Produto)
                 .ThenInclude(p => p.Fornecedor)
                 .OrderByDescending(f => f.DataSaida)
-                .ToList();
-
+                .ToListAsync();
 
             return View(SaidaProdutos);
         }
 
 
-        public IActionResult Cadastrar()
+
+        public async Task<IActionResult> Cadastrar()
         {
-            var produtos = _db.Produto.OrderBy(f => f.ProdutoNome).ToList();
+            var produtos = await _db.Produto.OrderBy(f => f.ProdutoNome).ToListAsync();
             ViewBag.Produtos = produtos;
-            var entradas = _db.EntradaProduto.Where(e => e.Ativo == true).ToList();
+            var entradas = await _db.EntradaProduto.Where(e => e.Ativo == true).ToListAsync();
             ViewBag.Entradas = entradas;
             return View();
         }
 
 
-        [HttpPost]
-        public IActionResult Cadastrar(SaidaProduto SaidaProduto)
+        [HttpGet]
+        public async Task<JsonResult> GetNumerosSeriePorProduto(int produtoId)
         {
+            var numerosSerie = await _db.EntradaProduto
+                .Where(e => e.ProdutoId == produtoId && e.Ativo == true)
+                .Select(e => new { e.NumeroSerie })
+                .ToListAsync();
+
+            return Json(numerosSerie);
+        }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> Cadastrar(SaidaProduto SaidaProduto)
+        {
+            
             if (SaidaProduto.ProdutoId < 1)
             {
-                return Cadastrar();
+                TempData["MensagemErro"] = "Produto inválido. Por favor, selecione um produto.";
+                return RedirectToAction("Index");
             }
 
-            if (SaidaProduto != null)
+            var entradaProduto = await _db.EntradaProduto.FirstOrDefaultAsync(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
+
+            if (entradaProduto == null)
             {
-                // Buscando a EntradaProduto com o mesmo NumeroSerie
-                var entradaProduto = _db.EntradaProduto.FirstOrDefault(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
-
-                if (entradaProduto != null)
-                {
-                    // Calculando o lucro da venda
-                    SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
-                    SaidaProduto.Ativado = false;
-                    _db.SaidaProduto.Add(SaidaProduto);
-
-                    // Atualizando a EntradaProduto para Ativo = false
-                    entradaProduto.Ativo = false;
-                    _db.SaveChanges();  // Salvar a saída do produto e a atualização do status de ativo
-
-                    // Verificar o estoque restante contando quantos produtos ativos ainda existem
-                    var estoqueRestante = _db.EntradaProduto
-                        .Count(e => e.ProdutoId == SaidaProduto.ProdutoId && e.Ativo == true);
-
-                    //Se o estoque estiver zerado, enviar o e - mail
-                    if (estoqueRestante == 0)
-                    {
-                        _notificacaoService.EnviarEmailProdutoSemEstoque(SaidaProduto.ProdutoId);
-                    }
-
-                    TempData["MensagemSucesso"] = "Cadastro realizado com sucesso!";
-                    return RedirectToAction("Index");
-                }
+                TempData["MensagemErro"] = "Número de série não encontrado!";
+                return RedirectToAction("Index");
             }
 
-            return View();
+            SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
+            SaidaProduto.Ativado = false;
+            _db.SaidaProduto.Add(SaidaProduto);
+
+            entradaProduto.Ativo = false;
+            await _db.SaveChangesAsync();
+
+            var estoqueRestante = await _db.EntradaProduto
+                .CountAsync(e => e.ProdutoId == SaidaProduto.ProdutoId && e.Ativo == true);
+
+            if (estoqueRestante == 0)
+            {
+                _notificacaoService.EnviarEmailProdutoSemEstoque(SaidaProduto.ProdutoId);
+                TempData["MensagemSemEstoque"] = "Vendeu a última unidade!";
+            }
+
+            TempData["MensagemSucesso"] = "Cadastro realizado com sucesso!";
+
+            return RedirectToAction("Index");
         }
+
 
 
         [HttpGet]
@@ -136,14 +147,14 @@ namespace EstoqueVendas.Controllers
         }
 
         [HttpPost]
-        public IActionResult Editar(SaidaProduto SaidaProduto)
+        public async Task<IActionResult> Editar(SaidaProduto SaidaProduto)
         {
 
-            var entradaProduto = _db.EntradaProduto.FirstOrDefault(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
+            var entradaProduto = await _db.EntradaProduto.FirstOrDefaultAsync(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
             SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
 
             _db.SaidaProduto.Update(SaidaProduto);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             TempData["MensagemSucesso"] = "Edição realizada com sucesso!";
 
@@ -152,16 +163,16 @@ namespace EstoqueVendas.Controllers
         }
 
         [HttpGet]
-        public IActionResult Excluir(int id)
+        public async Task<IActionResult> Excluir(int id)
         {
             if (id == null || id == 0)
             {
                 return NotFound();
             }
 
-            SaidaProduto SaidaProduto = _db.SaidaProduto.FirstOrDefault(x => x.Id == id);
+            SaidaProduto SaidaProduto = await _db.SaidaProduto.FirstOrDefaultAsync(x => x.Id == id);
 
-            var produtos = _db.Produto.OrderBy(f => f.ProdutoNome).ToList();
+            var produtos = await _db.Produto.OrderBy(f => f.ProdutoNome).ToListAsync();
             ViewBag.Produtos = produtos;
 
             if (SaidaProduto == null)
@@ -173,23 +184,23 @@ namespace EstoqueVendas.Controllers
         }
 
         [HttpPost]
-        public IActionResult Excluir(SaidaProduto SaidaProduto)
+        public async Task<IActionResult> Excluir(SaidaProduto SaidaProduto)
         {
             if (SaidaProduto == null)
             {
                 return NotFound();
             }
             // Buscando a EntradaProduto com o mesmo NumeroSerie
-            var entradaProduto = _db.EntradaProduto.FirstOrDefault(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
+            var entradaProduto = await _db.EntradaProduto.FirstOrDefaultAsync(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
 
             if (entradaProduto != null)
             {
                 // Atualizando a EntradaProduto para Ativo = false
                 entradaProduto.Ativo = true;
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
             _db.SaidaProduto.Remove(SaidaProduto);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             TempData["MensagemSucesso"] = "Remoção realizada com sucesso!";
 
@@ -197,9 +208,9 @@ namespace EstoqueVendas.Controllers
         }
 
         [HttpPost]
-        public IActionResult Relatorio(DateTime dataInicial, DateTime dataFinal)
+        public async Task<IActionResult> Relatorio(DateTime dataInicial, DateTime dataFinal)
         {
-            var relatorioData = _db.SaidaProduto
+            var relatorioData = await _db.SaidaProduto
                 .Include(p => p.Produto)
                 .Where(s => s.DataSaida >= dataInicial && s.DataSaida <= dataFinal)
                 .GroupBy(s => s.Produto.ProdutoNome)
@@ -212,7 +223,7 @@ namespace EstoqueVendas.Controllers
                     QuantidadeAtivada = g.Where(q => q.Ativado == true).Count(),
                 })
                 .OrderBy(r => r.ProdutoNome)
-                .ToList();
+                .ToListAsync();
 
             var lucroTotalPeriodo = relatorioData.Sum(r => r.LucroTotal);
             var quantidadeTotalVendida = relatorioData.Sum(r => r.QuantidadeVendida);
@@ -227,7 +238,7 @@ namespace EstoqueVendas.Controllers
             ViewBag.TotalAtivada = totalAtivada;
 
             // Dados de vendas por fornecedor
-            var fornecedorData = _db.SaidaProduto
+            var fornecedorData = await _db.SaidaProduto
                 .Include(p => p.Produto.Fornecedor)
                 .Where(s => s.DataSaida >= dataInicial && s.DataSaida <= dataFinal)
                 .GroupBy(s => s.Produto.Fornecedor.FornecedorNome)
@@ -239,7 +250,7 @@ namespace EstoqueVendas.Controllers
                     LucroTotal = g.Sum(s => s.LucroVenda)
                 })
                 .OrderBy(f => f.FornecedorNome)
-                .ToList();
+                .ToListAsync();
 
             ViewBag.FornecedorData = fornecedorData;
 
