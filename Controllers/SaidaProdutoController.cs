@@ -4,17 +4,20 @@ using EstoqueVendas.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EstoqueVendas.ViewModels;
+using EstoqueVendas.Services;
 
 namespace EstoqueVendas.Controllers
 {
     public class SaidaProdutoController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly NotificacaoService _notificacaoService;
 
 
-        public SaidaProdutoController(AppDbContext context)
+        public SaidaProdutoController(AppDbContext context, NotificacaoService notificacaoService)
         {
             _db = context;
+            _notificacaoService = notificacaoService;
         }
         public IActionResult Index()
         {
@@ -73,32 +76,41 @@ namespace EstoqueVendas.Controllers
             {
                 return Cadastrar();
             }
+
             if (SaidaProduto != null)
             {
-
-
                 // Buscando a EntradaProduto com o mesmo NumeroSerie
                 var entradaProduto = _db.EntradaProduto.FirstOrDefault(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
 
                 if (entradaProduto != null)
                 {
+                    // Calculando o lucro da venda
+                    SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
+                    SaidaProduto.Ativado = false;
+                    _db.SaidaProduto.Add(SaidaProduto);
+
                     // Atualizando a EntradaProduto para Ativo = false
                     entradaProduto.Ativo = false;
-                    _db.SaveChanges();
+                    _db.SaveChanges();  // Salvar a saída do produto e a atualização do status de ativo
+
+                    // Verificar o estoque restante contando quantos produtos ativos ainda existem
+                    var estoqueRestante = _db.EntradaProduto
+                        .Count(e => e.ProdutoId == SaidaProduto.ProdutoId && e.Ativo == true);
+
+                    //Se o estoque estiver zerado, enviar o e - mail
+                    if (estoqueRestante == 0)
+                    {
+                        _notificacaoService.EnviarEmailProdutoSemEstoque(SaidaProduto.ProdutoId);
+                    }
+
+                    TempData["MensagemSucesso"] = "Cadastro realizado com sucesso!";
+                    return RedirectToAction("Index");
                 }
-
-                SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
-                SaidaProduto.Ativado = false;
-                _db.SaidaProduto.Add(SaidaProduto);
-                _db.SaveChanges();
-
-                TempData["MensagemSucesso"] = "Cadastro realizado com sucesso!";
-
-                return RedirectToAction("Index");
             }
 
             return View();
         }
+
 
         [HttpGet]
         public IActionResult Editar(int? id)

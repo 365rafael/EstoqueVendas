@@ -1,4 +1,6 @@
+using EstoqueVendas.Configurations;
 using EstoqueVendas.Context;
+using EstoqueVendas.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
@@ -6,6 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Carregar as configurações de e-mail do appsettings.json
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+// Configurar o NotificacaoService
+builder.Services.AddTransient<NotificacaoService>();
 
 // Configuração de cultura
 var defaultDateCulture = "pt-BR";
