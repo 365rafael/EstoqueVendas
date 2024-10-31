@@ -35,7 +35,7 @@ namespace EstoqueVendas.Controllers
         [HttpPost]
         public IActionResult Cadastrar(EntradaProduto entradaProduto)
         {
-            if (entradaProduto.ProdutoId < 1)
+            if (entradaProduto.ProdutoId < 1 || entradaProduto.NumeroSerie == null)
             {
                 return Cadastrar();
             }

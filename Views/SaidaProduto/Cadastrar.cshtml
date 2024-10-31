@@ -13,19 +13,19 @@
     <form method="post" asp-controller="SaidaProduto" asp-action="Cadastrar">
         <div class="mb-3">
             <label for="DataSaida" class="form-label text-light">Data:</label>
-            <input type="date" class="form-control text-dark" asp-for="DataSaida" id="DataSaida" placeholder="Data de Saída">
+            <input type="date" class="form-control text-dark" asp-for="DataSaida" id="DataSaida" placeholder="Data de Saída" required>
             <span asp-validation-for="DataSaida" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label for="NomeCliente" class="form-label text-light">Cliente:</label>
-            <input type="text" class="form-control text-dark" asp-for="NomeCliente" id="NomeCliente" placeholder="Nome do cliente">
+            <input type="text" class="form-control text-dark" asp-for="NomeCliente" id="NomeCliente" placeholder="Nome do cliente" required>
             <span asp-validation-for="NomeCliente" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label for="ProdutoId" class="form-label text-light">Produto:</label>
-            <select class="form-select text-dark" asp-for="ProdutoId" id="ProdutoId">
+            <select class="form-select text-dark" asp-for="ProdutoId" id="ProdutoId" required>
                 <option value="">Selecione um produto</option>
                 @foreach (var produto in ViewBag.Produtos)
 
@@ -38,7 +38,7 @@
 
         <div class="mb-3">
             <label for="NumeroSerie" class="form-label text-light">Número de série:</label>
-            <select class="form-select text-dark" asp-for="NumeroSerie" id="NumeroSerie" disabled>
+            <select class="form-select text-dark" asp-for="NumeroSerie" id="NumeroSerie" disabled required>
                 <option value="">Selecione um número de série</option>
                 @foreach (var item in ViewBag.Entradas)
 
@@ -51,7 +51,7 @@
 
         <div class="mb-3">
             <label for="PrecoVenda" class="form-label text-light">Preço de venda (0,00):</label>
-            <input type="text" class="form-control text-dark" asp-for="PrecoVenda" id="Preco" placeholder="Preço de Venda">
+            <input type="text" class="form-control text-dark" asp-for="PrecoVenda" id="Preco" placeholder="Preço de Venda" required>
             <span asp-validation-for="PrecoVenda" class="text-danger"></span>
         </div>
 
