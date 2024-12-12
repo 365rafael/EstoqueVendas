@@ -4,21 +4,21 @@
     ViewData["Title"] = "Cadastrar entrada de estoque";
 }
 
-<div class="container bg-dark p-5 rounded-5">
+<div class="container bg-dark p-5 rounded-5 ">
 
     <div class="mb-5 text-center">
         <h1 class="text-light">Entrada de Produtos</h1>
     </div>
 
     <form method="post" asp-controller="EntradaProduto" asp-action="Cadastrar">
-        <div class="mb-3">
+        <div class="mb-3 w-25">
             <label for="DataEntrada" class="form-label text-light">Data:</label>
             <input type="date" class="form-control text-dark" asp-for="DataEntrada" id="DataEntrada" placeholder="Data de entrada" required>
             @* asp-for serve pra identificar a propriedade que receberá o valor do input *@
             <span asp-validation-for="DataEntrada" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 w-25">
             <label for="ProdutoId" class="form-label text-light">Produto:</label>
             <select class="form-select text-dark" asp-for="ProdutoId" id="ProdutoId" required>
                 <option value="">Selecione um produto</option>
@@ -30,13 +30,13 @@
             <span asp-validation-for="ProdutoId" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 w-25">
             <label for="NumeroSerie" class="form-label text-light">Número de série:</label>
             <input type="text" class="form-control text-dark" asp-for="NumeroSerie" id="NumeroSerie" placeholder="Número de série" required>
             <span asp-validation-for="NumeroSerie" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 w-25">
             <label for="PrecoCusto" class="form-label text-light">Preco de custo(0,00):</label>
             <input type="text" class="form-control text-dark" asp-for="PrecoCusto" id="Preco" placeholder="Preco de custo" required>
             <span asp-validation-for="PrecoCusto" class="text-danger"></span>
