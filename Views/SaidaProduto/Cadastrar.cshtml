@@ -11,7 +11,7 @@
     </div>
 
     <form method="post" asp-controller="SaidaProduto" asp-action="Cadastrar">
-        <div class="mb-3">
+        <div class="mb-3 w-50">
             <label for="DataSaida" class="form-label text-light">Data:</label>
             <input type="date" class="form-control text-dark" asp-for="DataSaida" id="DataSaida" placeholder="Data de Saída" required>
             <span asp-validation-for="DataSaida" class="text-danger"></span>
