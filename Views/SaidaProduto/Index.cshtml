@@ -58,6 +58,29 @@
             @TempData["MensagemSemEstoque"]
         </div>
     }
+
+    @if (ViewBag.ProdutosVendidosMesAtual != null)
+    {
+        <h4 class="mt-4">Resumo de Vendas por Produto - Mês Atual</h4>
+        <table class="table table-bordered table-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade Vendida</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.ProdutosVendidosMesAtual)
+                {
+                    <tr>
+                        <td>@item.ProdutoNome</td>
+                        <td>@item.QuantidadeVendida</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
     <div class="d-flex mb-3">
         <p class="alert-info flex-fill text-center me-2">Lucro do mês anterior: R$@ViewBag.LucroMesAnterior</p>
         <p class="alert-primary flex-fill text-center me-2">Lucro do mês atual: R$@ViewBag.LucroMesAtual</p>

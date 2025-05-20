@@ -53,6 +53,21 @@ namespace EstoqueVendas.Controllers
                 .OrderByDescending(f => f.DataSaida)
                 .ToListAsync();
 
+            // Quantidade de cada produto vendido no mês atual
+            var produtosVendidosMesAtual = await _db.SaidaProduto
+                .Where(s => s.DataSaida >= primeiroDiaMesAtual && s.DataSaida <= hoje)
+                .GroupBy(s => s.Produto.ProdutoNome)
+                .Select(g => new
+                {
+                    ProdutoNome = g.Key,
+                    QuantidadeVendida = g.Count()
+                })
+                .OrderBy(p => p.ProdutoNome)
+                .ToListAsync();
+
+            ViewBag.ProdutosVendidosMesAtual = produtosVendidosMesAtual;
+
+
             return View(SaidaProdutos);
         }
 
