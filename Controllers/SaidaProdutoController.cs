@@ -18,60 +18,26 @@ namespace EstoqueVendas.Controllers
             _db = context;
             _notificacaoService = notificacaoService;
         }
+
+        #region Index
+                
         public async Task<IActionResult> Index()
         {
             var hoje = DateTime.Today;
 
-            // Mês atual
-            var primeiroDiaMesAtual = new DateTime(hoje.Year, hoje.Month, 1);
-            var lucroMesAtual = await _db.SaidaProduto
-                .Where(s => s.DataSaida >= primeiroDiaMesAtual && s.DataSaida <= hoje)
-                .SumAsync(s => s.LucroVenda);
-            ViewBag.LucroMesAtual = lucroMesAtual;
+            ViewBag.LucroMesAtual = await CalcularLucroMesAtual(hoje);
+            ViewBag.LucroMesAnterior = await CalcularLucroMesAnterior(hoje);
+            ViewBag.TotalAtivadosUltimos30Dias = await CalcularTotalAtivadosUltimos30Dias(hoje);
+            ViewBag.ProdutosVendidosMesAtual = await ObterProdutosVendidosMesAtual(hoje);
 
-            // Mês anterior
-            var primeiroDiaMesAnterior = primeiroDiaMesAtual.AddMonths(-1);
-            var ultimoDiaMesAnterior = primeiroDiaMesAtual.AddDays(-1);
-            var lucroMesAnterior = await _db.SaidaProduto
-                .Where(s => s.DataSaida >= primeiroDiaMesAnterior && s.DataSaida <= ultimoDiaMesAnterior)
-                .SumAsync(s => s.LucroVenda);
-            ViewBag.LucroMesAnterior = lucroMesAnterior;
-
-            // Total de SaidaProduto.Ativado == true nos últimos 30 dias
-            var dataLimite = hoje.AddDays(-30);
-            var totalAtivadosUltimos30Dias = await _db.SaidaProduto
-                .Where(s => s.DataSaida >= dataLimite && s.DataSaida <= hoje && s.Ativado == true)
-                .CountAsync();
-            ViewBag.TotalAtivadosUltimos30Dias = totalAtivadosUltimos30Dias;
-
-            // Carregar os produtos de saída
-            var data45Dias = hoje.AddDays(-45);
-            var SaidaProdutos = await _db.SaidaProduto
-                .Where(p => p.DataSaida >= data45Dias && p.DataSaida <= hoje)
-                .Include(p => p.Produto)
-                .ThenInclude(p => p.Fornecedor)
-                .OrderByDescending(f => f.DataSaida)
-                .ToListAsync();
-
-            // Quantidade de cada produto vendido no mês atual
-            var produtosVendidosMesAtual = await _db.SaidaProduto
-                .Where(s => s.DataSaida >= primeiroDiaMesAtual && s.DataSaida <= hoje)
-                .GroupBy(s => s.Produto.ProdutoNome)
-                .Select(g => new
-                {
-                    ProdutoNome = g.Key,
-                    QuantidadeVendida = g.Count()
-                })
-                .OrderBy(p => p.ProdutoNome)
-                .ToListAsync();
-
-            ViewBag.ProdutosVendidosMesAtual = produtosVendidosMesAtual;
-
-
-            return View(SaidaProdutos);
+            var saidaProdutos = await ObterSaidasProdutosDosUltimosDias(hoje, 45);
+            return View(saidaProdutos);
         }
 
 
+        #endregion
+
+        #region Cadastro
 
         public async Task<IActionResult> Cadastrar()
         {
@@ -81,21 +47,6 @@ namespace EstoqueVendas.Controllers
             ViewBag.Entradas = entradas;
             return View();
         }
-
-
-        [HttpGet]
-        public async Task<JsonResult> GetNumerosSeriePorProduto(int produtoId)
-        {
-            var numerosSerie = await _db.EntradaProduto
-                .Where(e => e.ProdutoId == produtoId && e.Ativo == true)
-                .Select(e => new { e.NumeroSerie })
-                .ToListAsync();
-
-            return Json(numerosSerie);
-        }
-
-
-
 
         [HttpPost]
         public async Task<IActionResult> Cadastrar(SaidaProduto SaidaProduto)
@@ -115,7 +66,8 @@ namespace EstoqueVendas.Controllers
                 return RedirectToAction("Index");
             }
 
-            SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
+            SaidaProduto.LucroVenda = CalcularLucroVenda(SaidaProduto.PrecoVenda, (decimal)entradaProduto.PrecoCusto);
+
             SaidaProduto.Ativado = false;
             _db.SaidaProduto.Add(SaidaProduto);
 
@@ -136,8 +88,10 @@ namespace EstoqueVendas.Controllers
             return RedirectToAction("Index");
         }
 
+        #endregion
 
-
+        #region Edição
+              
         [HttpGet]
         public IActionResult Editar(int? id)
         {
@@ -166,7 +120,14 @@ namespace EstoqueVendas.Controllers
         {
 
             var entradaProduto = await _db.EntradaProduto.FirstOrDefaultAsync(e => e.NumeroSerie == SaidaProduto.NumeroSerie);
-            SaidaProduto.LucroVenda = SaidaProduto.PrecoVenda - entradaProduto.PrecoCusto;
+            if (entradaProduto == null)
+            {
+                TempData["MensagemErro"] = "Número de série inválido!";
+                return RedirectToAction("Index");
+            }
+
+            SaidaProduto.LucroVenda = CalcularLucroVenda(SaidaProduto.PrecoVenda, (decimal)entradaProduto.PrecoCusto);
+
 
             _db.SaidaProduto.Update(SaidaProduto);
             await _db.SaveChangesAsync();
@@ -177,6 +138,11 @@ namespace EstoqueVendas.Controllers
 
         }
 
+        #endregion
+
+
+        #region Exclusão
+        
         [HttpGet]
         public async Task<IActionResult> Excluir(int id)
         {
@@ -222,6 +188,9 @@ namespace EstoqueVendas.Controllers
             return RedirectToAction("Index");
         }
 
+        #endregion
+
+        #region Relatório
         [HttpPost]
         public async Task<IActionResult> Relatorio(DateTime dataInicial, DateTime dataFinal)
         {
@@ -271,5 +240,84 @@ namespace EstoqueVendas.Controllers
 
             return View("Relatorio", relatorioData);
         }
+        #endregion
+
+        #region Utilitarios
+
+
+        private async Task<decimal> CalcularLucroMesAtual(DateTime hoje)
+        {
+            var primeiroDia = new DateTime(hoje.Year, hoje.Month, 1);
+            return (decimal)await _db.SaidaProduto
+                .Where(s => s.DataSaida >= primeiroDia && s.DataSaida <= hoje)
+                .SumAsync(s => s.LucroVenda);
+        }
+
+        private async Task<decimal> CalcularLucroMesAnterior(DateTime hoje)
+        {
+            var primeiroDiaMesAtual = new DateTime(hoje.Year, hoje.Month, 1);
+            var primeiroDiaMesAnterior = primeiroDiaMesAtual.AddMonths(-1);
+            var ultimoDiaMesAnterior = primeiroDiaMesAtual.AddDays(-1);
+
+            return (decimal)await _db.SaidaProduto
+                .Where(s => s.DataSaida >= primeiroDiaMesAnterior && s.DataSaida <= ultimoDiaMesAnterior)
+                .SumAsync(s => s.LucroVenda);
+        }
+
+        private async Task<int> CalcularTotalAtivadosUltimos30Dias(DateTime hoje)
+        {
+            var dataLimite = hoje.AddDays(-30);
+            return await _db.SaidaProduto
+                .Where(s => s.DataSaida >= dataLimite && s.DataSaida <= hoje && s.Ativado == true)
+                .CountAsync();
+        }
+
+        private async Task<List<object>> ObterProdutosVendidosMesAtual(DateTime hoje)
+        {
+            var primeiroDia = new DateTime(hoje.Year, hoje.Month, 1);
+
+            return await _db.SaidaProduto
+                .Where(s => s.DataSaida >= primeiroDia && s.DataSaida <= hoje)
+                .GroupBy(s => s.Produto.ProdutoNome)
+                .Select(g => new
+                {
+                    ProdutoNome = g.Key,
+                    QuantidadeVendida = g.Count()
+                })
+                .OrderBy(p => p.ProdutoNome)
+                .ToListAsync<object>();
+        }
+
+        private async Task<List<SaidaProduto>> ObterSaidasProdutosDosUltimosDias(DateTime hoje, int dias)
+        {
+            var dataInicial = hoje.AddDays(-dias);
+            return await _db.SaidaProduto
+                .Where(p => p.DataSaida >= dataInicial && p.DataSaida <= hoje)
+                .Include(p => p.Produto)
+                    .ThenInclude(p => p.Fornecedor)
+                .OrderByDescending(f => f.DataSaida)
+                .ToListAsync();
+        }
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetNumerosSeriePorProduto(int produtoId)
+        {
+            var numerosSerie = await _db.EntradaProduto
+                .Where(e => e.ProdutoId == produtoId && e.Ativo == true)
+                .Select(e => new { e.NumeroSerie })
+                .ToListAsync();
+
+            return Json(numerosSerie);
+        }
+
+
+        private decimal CalcularLucroVenda(decimal precoVenda, decimal precoCusto)
+        {
+            return precoVenda - precoCusto;
+        }
+
+
+        #endregion
     }
 }
