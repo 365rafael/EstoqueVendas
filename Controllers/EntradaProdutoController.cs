@@ -23,6 +23,7 @@ namespace EstoqueVendas.Controllers
             return View(EntradaProdutos);
         }
 
+        #region Cadastrar
 
         public IActionResult Cadastrar()
         {
@@ -30,8 +31,7 @@ namespace EstoqueVendas.Controllers
             ViewBag.Produtos = produtos;
             return View();
         }
-
-
+               
         [HttpPost]
         public IActionResult Cadastrar(EntradaProduto entradaProduto)
         {
@@ -54,6 +54,10 @@ namespace EstoqueVendas.Controllers
             return View();
         }
 
+        #endregion
+
+        #region Editar
+
         [HttpGet]
         public IActionResult Editar(int? id)
         {
@@ -62,19 +66,21 @@ namespace EstoqueVendas.Controllers
                 return NotFound();
             }
 
-            EntradaProduto EntradaProduto = _db.EntradaProduto
+            EntradaProduto entradaProduto = _db.EntradaProduto
                 .Include(f => f.Produto)
                 .FirstOrDefault(x => x.Id == id);
 
             var produtos = _db.Produto.OrderBy(f => f.ProdutoNome).ToList();
             ViewBag.Produtos = produtos;
 
-            if (EntradaProduto == null)
+            if (entradaProduto == null)
             {
-                return NotFound();
+                TempData["MensagemErro"] = "Entrada não encontrada.";
+                return RedirectToAction("Index");
             }
 
-            return View(EntradaProduto);
+
+            return View(entradaProduto);
         }
 
         [HttpPost]
@@ -90,6 +96,10 @@ namespace EstoqueVendas.Controllers
 
         }
 
+        #endregion
+
+        #region Excluir
+                
         [HttpGet]
         public IActionResult Excluir(int id)
         {
@@ -126,5 +136,7 @@ namespace EstoqueVendas.Controllers
 
             return RedirectToAction("Index");
         }
+       
+        #endregion
     }
 }
