@@ -34,5 +34,6 @@ Sistema de gestão de estoque e vendas, desenvolvido em **ASP.NET Core 8.0** com
 
 https://www.youtube.com/watch?v=8pK6d0KDayc
 
-🙋‍♂️ Autor
+## 🙋‍♂️ Autor
+
 Desenvolvido por [Rafael Arantes](https://portfolio-zeta-eight-65.vercel.app/) 🚀
