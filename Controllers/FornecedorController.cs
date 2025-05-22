@@ -19,6 +19,8 @@ namespace EstoqueVendas.Controllers
             return View(fornecedores);
         }
 
+        #region Cadastrar
+
         public IActionResult Cadastrar()
         {
             return View();
@@ -39,6 +41,10 @@ namespace EstoqueVendas.Controllers
 
             return View();
         }
+
+        #endregion
+
+        #region Editar
 
         [HttpGet]
         public IActionResult Editar(int? id)
@@ -71,11 +77,14 @@ namespace EstoqueVendas.Controllers
                 return RedirectToAction("Index");
             }
 
-            TempData["MensagemErro"] = "Algo deu errado";
-
+            TempData["MensagemErro"] = "Preencha os campos corretamente.";
 
             return View(fornecedor);
         }
+
+        #endregion
+
+        #region Excluir
 
         [HttpGet]
         public IActionResult Excluir(int id)
@@ -110,5 +119,6 @@ namespace EstoqueVendas.Controllers
 
             return RedirectToAction("Index");
         }
+        #endregion
     }
 }
