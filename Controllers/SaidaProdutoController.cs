@@ -30,7 +30,7 @@ namespace EstoqueVendas.Controllers
             ViewBag.TotalAtivadosUltimos30Dias = await CalcularTotalAtivadosUltimos30Dias(hoje);
             ViewBag.ProdutosVendidosMesAtual = await ObterProdutosVendidosMesAtual(hoje);
 
-            var saidaProdutos = await ObterSaidasProdutosDosUltimosDias(hoje, 45);
+            var saidaProdutos = await ObterSaidasProdutosDosUltimosDias(hoje, 120);
             return View(saidaProdutos);
         }
 
