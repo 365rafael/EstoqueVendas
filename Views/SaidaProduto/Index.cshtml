@@ -81,10 +81,11 @@
         </table>
     }
 
-    <div class="d-flex mb-3">
-        <p class="alert-info flex-fill text-center me-2">Lucro do mês anterior: R$@ViewBag.LucroMesAnterior</p>
+    <div class="d-flex mb-4">
+        <p class="alert-secondary flex-fill text-center me-2">Lucro do mês anterior: R$@ViewBag.LucroMesAnterior</p>
         <p class="alert-primary flex-fill text-center me-2">Lucro do mês atual: R$@ViewBag.LucroMesAtual</p>
-        <p class="alert-success flex-fill text-center">Clientes ativados nos últimos 30 dias: @ViewBag.TotalAtivadosUltimos30Dias</p>
+        <p class="alert-success flex-fill text-center me-2">Clientes ativados nos últimos 30 dias: @ViewBag.TotalAtivadosUltimos30Dias</p>
+        <p class="alert-info flex-fill text-center">Clientes ativados nos últimos 120 dias: @ViewBag.TotalAtivadosUltimos120Dias</p>
     </div>
 
     <table id="SaidaProdutos" class="table table-striped tabela-data-table">

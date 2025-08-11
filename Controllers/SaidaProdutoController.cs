@@ -28,6 +28,7 @@ namespace EstoqueVendas.Controllers
             ViewBag.LucroMesAtual = await CalcularLucroMesAtual(hoje);
             ViewBag.LucroMesAnterior = await CalcularLucroMesAnterior(hoje);
             ViewBag.TotalAtivadosUltimos30Dias = await CalcularTotalAtivadosUltimos30Dias(hoje);
+            ViewBag.TotalAtivadosUltimos120Dias = await CalcularTotalAtivadosUltimos120Dias(hoje);
             ViewBag.ProdutosVendidosMesAtual = await ObterProdutosVendidosMesAtual(hoje);
 
             var saidaProdutos = await ObterSaidasProdutosDosUltimosDias(hoje, 120);
@@ -267,6 +268,13 @@ namespace EstoqueVendas.Controllers
         private async Task<int> CalcularTotalAtivadosUltimos30Dias(DateTime hoje)
         {
             var dataLimite = hoje.AddDays(-30);
+            return await _db.SaidaProduto
+                .Where(s => s.DataSaida >= dataLimite && s.DataSaida <= hoje && s.Ativado == true)
+                .CountAsync();
+        }
+          private async Task<int> CalcularTotalAtivadosUltimos120Dias(DateTime hoje)
+        {
+            var dataLimite = hoje.AddDays(-120);
             return await _db.SaidaProduto
                 .Where(s => s.DataSaida >= dataLimite && s.DataSaida <= hoje && s.Ativado == true)
                 .CountAsync();
